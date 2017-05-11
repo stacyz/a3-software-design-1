@@ -20,9 +20,24 @@ function CirclePack() {
             .size([width - margin.left, height - margin.top])
             .padding(padding);
 
-        var root = d3.hierarchy(data)
+        // var root = d3.hierarchy(data)
+        //     .eachBefore(function(d) {
+        //         d.data.id = (d.parent ? d.parent.data.id + '.' : '') + d.data.name;
+        //     })
+        //     .sum(function(d) {
+        //         return +d.size;
+        //     })
+        //     .sort(function(a, b) {
+        //         return b.value - a.value;
+        //     });
+
+        var colorScale = d3.scaleOrdinal().domain([-1, 0, 1]).range(colors);
+
+        // iterate through selections
+        selection.each(function(data) {
+           var root = d3.hierarchy(data)
             .eachBefore(function(d) {
-                d.data.id = (d.parent ? d.parent.data.id + '.' : '') + d.data.name;
+                d.data.key = (d.parent ? d.parent.data.id + '.' : '') + d.data.name;
             })
             .sum(function(d) {
                 return +d.size;
@@ -31,10 +46,8 @@ function CirclePack() {
                 return b.value - a.value;
             });
 
-        var colorScale = d3.scaleOrdinal().domain([-1, 0, 1]).range(colors);
+            console.log(root);
 
-        // iterate through selections
-        selection.each(function(data) {
             var svg = d3.select(this)
                 .selectAll('svg')
                 .data([root]);
@@ -70,7 +83,7 @@ function CirclePack() {
                 .attr('cy', function(d) { return d.y; })
                 .attr('fill', function(d) {
                     console.log(d.data.name)
-                    return colorScale(d.data.name);
+                    return colorScale(d.data.key);
                 });
 
             circles.exit().remove();
